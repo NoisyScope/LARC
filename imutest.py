@@ -11,6 +11,11 @@ import threading
 
 serial_port = '/dev/ttyUSB0'
 baudrate = 9600
+
+
+button = 1 # Beware of this global variable ######## IMPORTANT ########
+
+
 #ser = serial.Serial(serial_port, baudrate)
 
 # Define serial port and baudrate
@@ -23,6 +28,20 @@ baudrate = 9600
 nnBlobPath = '/home/pi/Desktop/eyes_on_me/models/yolov7_v2/best_yolov7_v1_openvino_2022.1_6shave.blob'
 syncNN = True
 
+def calibrate_gyroscope(num_samples=100):
+    # Collect a number of samples to set a reference point
+    reference_point = np.zeros(1)
+    for _ in range(num_samples):
+        reference_point += gyroValues.x()
+    reference_point /= num_samples
+    return reference_point
+
+def calculate_rotation_difference(reference_point):
+    current_data = gyroValues.x()
+    rotation_difference = current_data - reference_point
+    # Convert from radians to degrees
+    rotation_difference_degrees = np.degrees(rotation_difference)
+    return rotation_difference_degrees
 
 # Create pipeline
 pipeline = dai.Pipeline()
@@ -121,7 +140,9 @@ with dai.Device(pipeline) as device:
     color = (255, 255, 255)
     printOutputLayersOnce = True
 
-
+    # Run function to calibrate gyroscope
+    # This is not supposed to work as there is no gyroValues object
+    reference_point = calibrate_gyroscope()
 
     while True:
         inPreview = previewQueue.get()
@@ -130,8 +151,12 @@ with dai.Device(pipeline) as device:
         inNN = networkQueue.get()
         imuData = imuQueue.get()
 
-
         imuPackets = imuData.packets
+        print('Waiting for Gyro calibration...')
+        if button == 1:
+            reference_point = calibrate_gyroscope()
+            button  = 0
+            
         for imuPacket in imuPackets:
             acceleroValues = imuPacket.acceleroMeter
             gyroValues = imuPacket.gyroscope
@@ -145,12 +170,15 @@ with dai.Device(pipeline) as device:
 
             imuF = "{:.06f}"
             tsF  = "{:.03f}"
+        
 
             print(f"Accelerometer timestamp: {tsF.format(acceleroTs)} ms")
             print(f"Accelerometer [m/s^2]: x: {imuF.format(acceleroValues.x)} y: {imuF.format(acceleroValues.y)} z: {imuF.format(acceleroValues.z)}")
             print(f"Gyroscope timestamp: {tsF.format(gyroTs)} ms")
             print(f"Gyroscope [rad/s]: x: {imuF.format(gyroValues.x)} y: {imuF.format(gyroValues.y)} z: {imuF.format(gyroValues.z)} ")
-
+            
+            rotation_difference = calculate_rotation_difference(reference_point)
+            print("Rotation difference (degrees):", rotation_difference)
 
         if printOutputLayersOnce:
             toPrint = 'Output layer names:'
