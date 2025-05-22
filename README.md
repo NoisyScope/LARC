@@ -16,11 +16,14 @@ The system can:
 
 ```
 .
-├── docs/                   # Sphinx documentation files (currently build may require local effort)
-│   ├── conf.py
-│   ├── index.rst
-│   ├── api.rst
-│   └── ... (other sphinx files)
+├── docs/                   # Project documentation files in Markdown format
+│   ├── index.md            # Main entry point for documentation
+│   ├── main.md
+│   ├── camera_manager.md
+│   ├── model_loader.md
+│   ├── spatial_processing.md
+│   ├── imu_handler.md
+│   └── utils.md
 ├── examples/
 │   └── MLtest.py           # Standalone TFLite object detection example using webcam
 ├── models/                 # Directory for ML model files (e.g., .blob, .tflite)
@@ -50,15 +53,12 @@ The system can:
    - NumPy
    - (Optional, for TFLite example) TensorFlow Lite Runtime (`tflite_runtime` or `tensorflow`)
    - (Optional, for TFLite example) TFLite Support library (`tflite-support`)
-   - (For documentation generation) Sphinx, Sphinx RTD Theme
 
    Install dependencies using pip:
    ```bash
    pip install depthai numpy opencv-python
    # For examples/MLtest.py and TFLite model loading in general:
    pip install tflite-support # Or tflite_runtime, depending on your needs
-   # For documentation (if you want to try building it locally):
-   pip install sphinx sphinx-rtd-theme
    ```
    It's recommended to use a virtual environment.
 
@@ -88,16 +88,11 @@ The system can:
 
 ## Documentation
 
-- **Inline Docstrings:** All modules and functions in `src/` and `main.py` are documented with detailed docstrings.
-- **HTML Documentation (Local Build):**
-    - The necessary Sphinx files are located in the `docs/` directory.
-    - Due to potential environment-specific issues, the automated build of HTML documentation was not completed in the repository.
-    - To attempt a local build:
-      ```bash
-      cd docs
-      make html  # or sphinx-build -b html . _build/html
-      ```
-    - If successful, the documentation can be found in `docs/_build/html/index.html`.
+Project documentation, including an API reference, is available in Markdown format in the `docs/` directory.
+
+- **[Start Reading the Documentation](./docs/index.md)**
+
+The documentation details the project architecture, individual module functionalities, and provides an API reference for developers, extracted from the source code docstrings.
 
 ## Contributing
 
