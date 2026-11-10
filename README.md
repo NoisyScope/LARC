@@ -1,4 +1,21 @@
-# Eyes On Me - Object Detection and Spatial Localization Project
+# Eyes On Me — Real-Time 3D Object Detection and Localization on OAK-D
+
+![Python](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)
+![DepthAI](https://img.shields.io/badge/DepthAI-OAK--D-8A2BE2)
+![YOLOv7](https://img.shields.io/badge/YOLOv7-OpenVINO%20blob-00FFFF)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+Perception stack for the **IEEE Latin American Robotics Competition (LARC) Open Challenge** robot.
+A custom-trained YOLOv7 detector runs on the Myriad X VPU of a Luxonis OAK-D, stereo depth turns each
+detection into metric (X, Y, Z) coordinates, and the on-board IMU provides orientation. The results
+are streamed to the robot controller over serial.
+
+```
+RGB cam ─► YOLOv7 (on-device VPU) ─┐
+                                   ├─► spatial fusion (detection + depth → X,Y,Z) ─► serial → controller
+Stereo pair ─► depth map ──────────┘                       ▲
+IMU (accel + gyro) ─► orientation / rotation vector ───────┘
+```
 
 ## Overview
 
@@ -94,11 +111,6 @@ Project documentation, including an API reference, is available in Markdown form
 
 The documentation details the project architecture, individual module functionalities, and provides an API reference for developers, extracted from the source code docstrings.
 
-## Contributing
-
-Contributions are welcome! Please feel free to fork the repository, make changes, and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
-
 ## License
 
-This project is licensed under the Apache License 2.0. See the `LICENSE` file for details (if a `LICENSE` file is added, otherwise assume this or specify).
-```
+MIT. See [`LICENSE`](LICENSE).
